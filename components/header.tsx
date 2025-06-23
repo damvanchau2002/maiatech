@@ -102,6 +102,16 @@ const servicesMenuData = {
 export default function Header({ activePage }: { activePage?: string }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [expandedMobileCategories, setExpandedMobileCategories] = useState<string[]>([])
+  
+  // Toggle category expansion in mobile view
+  const toggleMobileCategory = useCallback((category: string) => {
+    setExpandedMobileCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(cat => cat !== category) 
+        : [...prev, category]
+    )
+  }, [])
   
   // Sử dụng useCallback để tối ưu hiệu suất
   const toggleDropdown = useCallback((dropdownName: string) => {
@@ -114,6 +124,7 @@ export default function Header({ activePage }: { activePage?: string }) {
 
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false)
+    setExpandedMobileCategories([])
   }, [])
 
   // Xử lý click bên ngoài dropdown để đóng menu
@@ -271,24 +282,24 @@ export default function Header({ activePage }: { activePage?: string }) {
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile Navigation Menu - Viết lại hoàn toàn phần này */}
         <div
           className={`md:hidden border-t border-gray-200 bg-white transition-all duration-300 ease-in-out ${
             isMobileMenuOpen ? "max-h-[80vh] opacity-100 overflow-y-auto" : "max-h-0 opacity-0 overflow-hidden"
           }`}
         >
-          <nav className="px-2 pt-2 pb-3 space-y-1">
+          <ul className="px-2 pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
-              <div key={item.name}>
+              <li key={item.name} className="border-b border-gray-100 last:border-b-0">
                 {item.hasDropdown ? (
-                  <>
-                    <div className="flex items-center">
+                  <div className="w-full">
+                    <div className="flex items-center justify-between w-full">
                       <Link
                         href={item.href}
-                        className={`flex-grow px-3 py-2 text-base transition-colors duration-150 rounded-md ${
+                        className={`flex-grow px-3 py-3 text-base font-medium transition-colors duration-150 ${
                           activePage === item.name
-                            ? "text-maiaRed-DEFAULT bg-red-50 border-l-4 border-maiaRed-DEFAULT"
-                            : "text-textPrimary hover:text-maiaBlue-DEFAULT hover:bg-blue-50"
+                            ? "text-maiaRed-DEFAULT"
+                            : "text-textPrimary hover:text-maiaBlue-DEFAULT"
                         }`}
                         onClick={closeMobileMenu}
                       >
@@ -296,8 +307,9 @@ export default function Header({ activePage }: { activePage?: string }) {
                       </Link>
                       <button
                         onClick={() => toggleDropdown(item.name)}
-                        className="p-2 text-gray-600 hover:text-maiaBlue-DEFAULT rounded-md"
+                        className="p-3 text-gray-600 hover:text-maiaBlue-DEFAULT rounded-md w-12 flex justify-center items-center"
                         aria-label={`Toggle ${item.name} dropdown`}
+                        aria-expanded={activeDropdown === item.name}
                       >
                         <ChevronDown 
                           className={`w-5 h-5 transition-transform duration-200 ${
@@ -309,93 +321,99 @@ export default function Header({ activePage }: { activePage?: string }) {
                     
                     {/* Mobile Dropdown Content */}
                     {activeDropdown === item.name && (
-                      <div className="pl-4 mt-1 space-y-1 border-l-2 border-gray-200 ml-3">
+                      <ul className="pl-4 mt-1 space-y-1 border-l-2 border-gray-200 ml-3 mb-3 animate-fadeIn">
                         {item.name === "CÔNG NGHỆ" && 
                           Object.entries(technologyMenuData).map(([category, items]) => (
-                            <div key={category} className="mb-3">
-                              <h4 className="font-medium text-sm text-maiaBlue-DEFAULT uppercase px-3 py-1">{category}</h4>
-                              <div className="space-y-1">
-                                {items.slice(0, 5).map((item, index) => (
-                                  <Link
-                                    key={index}
-                                    href={`/cong-nghe?category=${encodeURIComponent(category)}&tech=${encodeURIComponent(item)}`}
-                                    className="block px-3 py-1 text-sm text-gray-700 hover:text-maiaBlue-DEFAULT rounded hover:bg-blue-50"
-                                    onClick={closeMobileMenu}
-                                  >
-                                    {item}
-                                  </Link>
-                                ))}
-                                {items.length > 5 && (
-                                  <Link 
-                                    href={`/cong-nghe?category=${encodeURIComponent(category)}`}
-                                    className="block px-3 py-1 text-sm text-maiaBlue-DEFAULT italic"
-                                    onClick={closeMobileMenu}
-                                  >
-                                    Xem thêm...
-                                  </Link>
-                                )}
-                              </div>
-                            </div>
+                            <li key={category} className="mb-3">
+                              <button 
+                                onClick={() => toggleMobileCategory(category)}
+                                className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-maiaBlue-DEFAULT uppercase hover:bg-blue-50 rounded-md"
+                                aria-expanded={expandedMobileCategories.includes(category)}
+                              >
+                                <span>{category}</span>
+                                <ChevronDown 
+                                  className={`w-4 h-4 transition-transform duration-200 ${
+                                    expandedMobileCategories.includes(category) ? "rotate-180" : ""
+                                  }`} 
+                                />
+                              </button>
+                              
+                              {expandedMobileCategories.includes(category) && (
+                                <ul className="mt-1 space-y-1 pl-3 animate-fadeIn">
+                                  {items.map((item, index) => (
+                                    <li key={index}>
+                                      <Link
+                                        href={`/cong-nghe?category=${encodeURIComponent(category)}&tech=${encodeURIComponent(item)}`}
+                                        className="block px-3 py-2 text-sm text-gray-700 hover:text-maiaBlue-DEFAULT rounded hover:bg-blue-50 w-full text-left"
+                                        onClick={closeMobileMenu}
+                                      >
+                                        {item}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </li>
                           ))
                         }
                         
                         {item.name === "DỊCH VỤ" && 
                           Object.entries(servicesMenuData).map(([category, items]) => (
-                            <div key={category} className="mb-3">
-                              <h4 className="font-medium text-sm text-maiaBlue-DEFAULT uppercase px-3 py-1 leading-tight">{category}</h4>
-                              <div className="space-y-1">
-                                {items.slice(0, 3).map((item, index) => (
-                                  <Link
-                                    key={index}
-                                    href={`/dich-vu?category=${encodeURIComponent(category)}&service=${encodeURIComponent(item)}`}
-                                    className="block px-3 py-1 text-sm text-gray-700 hover:text-maiaBlue-DEFAULT rounded hover:bg-blue-50"
-                                    onClick={closeMobileMenu}
-                                  >
-                                    {item}
-                                  </Link>
-                                ))}
-                                {items.length > 3 && (
-                                  <Link 
-                                    href={`/dich-vu?category=${encodeURIComponent(category)}`}
-                                    className="block px-3 py-1 text-sm text-maiaBlue-DEFAULT italic"
-                                    onClick={closeMobileMenu}
-                                  >
-                                    Xem thêm...
-                                  </Link>
-                                )}
-                              </div>
-                            </div>
+                            <li key={category} className="mb-3">
+                              <button 
+                                onClick={() => toggleMobileCategory(category)}
+                                className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-maiaBlue-DEFAULT uppercase hover:bg-blue-50 rounded-md leading-tight"
+                                aria-expanded={expandedMobileCategories.includes(category)}
+                              >
+                                <span>{category}</span>
+                                <ChevronDown 
+                                  className={`w-4 h-4 transition-transform duration-200 ${
+                                    expandedMobileCategories.includes(category) ? "rotate-180" : ""
+                                  }`} 
+                                />
+                              </button>
+                              
+                              {expandedMobileCategories.includes(category) && (
+                                <ul className="mt-1 space-y-1 pl-3 animate-fadeIn">
+                                  {items.map((item, index) => (
+                                    <li key={index}>
+                                      <Link
+                                        href={`/dich-vu?category=${encodeURIComponent(category)}&service=${encodeURIComponent(item)}`}
+                                        className="block px-3 py-2 text-sm text-gray-700 hover:text-maiaBlue-DEFAULT rounded hover:bg-blue-50 w-full text-left"
+                                        onClick={closeMobileMenu}
+                                      >
+                                        {item}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </li>
                           ))
                         }
-                      </div>
+                      </ul>
                     )}
-                  </>
+                  </div>
                 ) : (
                   <Link
                     href={item.href}
                     onClick={closeMobileMenu}
-                    className={`block px-3 py-2 text-base transition-colors duration-150 rounded-md ${
+                    className={`block w-full px-3 py-3 text-base font-medium transition-colors duration-150 ${
                       activePage === item.name
-                        ? "text-maiaRed-DEFAULT bg-red-50 border-l-4 border-maiaRed-DEFAULT"
-                        : "text-textPrimary hover:text-maiaBlue-DEFAULT hover:bg-blue-50"
+                        ? "text-maiaRed-DEFAULT"
+                        : "text-textPrimary hover:text-maiaBlue-DEFAULT"
                     }`}
                   >
                     {item.name}
                   </Link>
                 )}
-              </div>
+              </li>
             ))}
-          </nav>
+          </ul>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black bg-opacity-25 z-40 transition-opacity duration-300"
-          onClick={closeMobileMenu}
-        />
-      )}
+  
     </header>
   )
 }
