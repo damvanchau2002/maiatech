@@ -30,20 +30,20 @@ const newsItems = [
 
 export default function NewsSection() {
   return (
-    <section className="py-20 sm:py-24 bg-white text-gray-800 mt-8 mb-8">
+    <section className="py-20 sm:py-24 bg-white text-gray-800 mt-8 mb-8 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2
-          className="text-4xl sm:text-5xl font-black text-center text-gray-800 mb-12 sm:mb-16 uppercase"
+          className="text-4xl sm:text-5xl font-black text-center text-gray-800 mb-12 sm:mb-16 uppercase tracking-wider"
           style={{
-            fontFamily: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif",
-            WebkitTextStroke: "1px #ccc",
-            textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
+            fontFamily: "Roboto, sans-serif",
+            letterSpacing: "0.05em",
+            fontWeight: 900,
           }}
         >
           TIN TỨC
         </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 overflow-hidden">
           {/* Left Column: Featured Video/News - Fixed width and spacing */}
           <div className="w-full">
             <a
@@ -81,8 +81,8 @@ export default function NewsSection() {
                         className="rounded-md object-cover w-[80px] h-[60px] border-2 border-blue-300/50 group-hover:border-white transition-colors"
                       />
                     </div>
-                    <div className="flex-grow min-w-0">
-                      <p className="text-xs font-semibold text-blue-200 uppercase tracking-wide group-hover:text-blue-100 transition-colors">
+                    <div className="flex-grow min-w-0 max-w-full overflow-hidden">
+                      <p className="text-xs font-bold text-blue-200 uppercase tracking-wide group-hover:text-blue-100 transition-colors truncate">
                         {item.category}
                       </p>
                       <h3 className="font-semibold text-sm text-white leading-tight mt-0.5 group-hover:text-yellow-300 transition-colors line-clamp-2">

@@ -1,10 +1,14 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google" // Or a font that matches the design more closely if specified
+import { Roboto } from "next/font/google" // Thay đổi từ Inter sang Roboto
 import "./globals.css"
 import { cn } from "@/lib/utils"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" }) // Consider a font like Roboto or Open Sans if it matches better
+const roboto = Roboto({ 
+  weight: ['300', '400', '500', '700', '900'],
+  subsets: ["latin"], 
+  variable: "--font-sans" 
+}) // Thêm các weight cần thiết
 
 export const metadata: Metadata = {
   title: "Tuyển dụng - MaiATech",
@@ -20,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-white font-sans antialiased", inter.variable)}>{children}</body>
+      <body className={cn("min-h-screen bg-white font-sans antialiased", roboto.variable)}>{children}</body>
     </html>
   )
 }
